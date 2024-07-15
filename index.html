@@ -61,6 +61,9 @@
                     <!-- Time options will be populated by JavaScript -->
                 </select>
             </div>
+            <div class="col-md-4">
+                <button id="startSlideshow" class="btn btn-primary">Start Slideshow</button>
+            </div>
         </div>
     </div>
 
@@ -145,6 +148,63 @@
                     img.src = imageUrl;
                 });
             }
+
+            // Function to start the slideshow
+            $('#startSlideshow').on('click', function () {
+                const selectedDate = $('#datepicker').datepicker('getDate');
+                const selectedHour = $('#timepicker').val();
+
+                const year = selectedDate.getFullYear();
+                const month = ('0' + (selectedDate.getMonth() + 1)).slice(-2);
+                const day = ('0' + selectedDate.getDate()).slice(-2);
+                const time = selectedHour + '0000';
+
+                let currentDate = new Date(year, selectedDate.getMonth(), day);
+                let counter = 0;
+
+                function loadNextImage() {
+                    if (counter >= 6) return;
+
+                    const nextYear = currentDate.getFullYear();
+                    const nextMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+                    const nextDay = ('0' + currentDate.getDate()).slice(-2);
+                    const basetime = nextYear + nextMonth + nextDay + time;
+                    const validtime = basetime;
+
+                    const imageUrls = [
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/2.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/3.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/3.jpg`,
+                    ];
+
+                    imageUrls.forEach((imageUrl, index) => {
+                        const canvas = document.getElementById(`myCanvas${index}`);
+                        const ctx = canvas.getContext('2d');
+
+                        // キャンバスサイズを設定
+                        canvas.width = canvas.clientWidth;
+                        canvas.height = canvas.clientHeight;
+
+                        // 画像を描画
+                        const img = new Image();
+                        img.onload = function () {
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        };
+                        img.src = imageUrl;
+                    });
+
+                    // Move to the next day and increment the counter
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    counter++;
+
+                    // Wait 1 second before loading the next image
+                    setTimeout(loadNextImage, 1000);
+                }
+
+                // Start the slideshow
+                loadNextImage();
+            });
 
             // Initial image load
             updateImages();
