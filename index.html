@@ -79,29 +79,24 @@
 
     <script>
         $(document).ready(function () {
-            // Initialize datepicker
             $('#datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 todayHighlight: true
             }).on('changeDate', updateImages);
 
-            // Populate timepicker with hour options
             for (let i = 0; i < 24; i++) {
                 const hour = ('0' + i).slice(-2);
                 $('#timepicker').append(`<option value="${hour}">${hour}:00</option>`);
             }
 
-            // Add event listener for timepicker
             $('#timepicker').on('change', updateImages);
 
-            // Initialize with today's date and current hour in UTC
             const now = new Date();
             const utcHour = now.getUTCHours();
             $('#datepicker').datepicker('setDate', new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())));
             $('#timepicker').val(('0' + utcHour).slice(-2));
 
-            // Function to update images based on selected date and time
             function updateImages() {
                 const selectedDate = $('#datepicker').datepicker('getDate');
                 const selectedHour = $('#timepicker').val();
@@ -124,11 +119,9 @@
                     const canvas = document.getElementById(`myCanvas${index}`);
                     const ctx = canvas.getContext('2d');
 
-                    // Set canvas size
                     canvas.width = canvas.clientWidth;
                     canvas.height = canvas.clientHeight;
 
-                    // Draw image
                     const img = new Image();
                     img.onload = function () {
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -137,56 +130,62 @@
                 });
             }
 
-            // Function to start the 24-hour slideshow
-$('#startSlideshow').on('click', function () {
-    const selectedDate = $('#datepicker').datepicker('getDate');
-    let selectedHour = parseInt($('#timepicker').val());
+            $('#startSlideshow').on('click', function () {
+                const selectedDate = $('#datepicker').datepicker('getDate');
+                let selectedHour = parseInt($('#timepicker').val());
 
-    let currentDate = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate()));
-    currentDate.setUTCHours(selectedHour - 23); // Start 24 hours ago
-    let counter = 0;
+                let currentDate = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate()));
+                currentDate.setUTCHours(selectedHour - 23);
+                let counter = 0;
 
-    function loadNextImage() {
-        if (counter >= 24) return;
+                function loadNextImage() {
+                    if (counter >= 24) return;
 
-        const nextYear = currentDate.getUTCFullYear();
-        const nextMonth = ('0' + (currentDate.getUTCMonth() + 1)).slice(-2);
-        const nextDay = ('0' + currentDate.getUTCDate()).slice(-2);
-        const nextHour = ('0' + currentDate.getUTCHours()).slice(-2);
-        const basetime = nextYear + nextMonth + nextDay + nextHour + '0000';
-        const validtime = basetime;
+                    const nextYear = currentDate.getUTCFullYear();
+                    const nextMonth = ('0' + (currentDate.getUTCMonth() + 1)).slice(-2);
+                    const nextDay = ('0' + currentDate.getUTCDate()).slice(-2);
+                    const nextHour = ('0' + currentDate.getUTCHours()).slice(-2);
+                    const basetime = nextYear + nextMonth + nextDay + nextHour + '0000';
+                    const validtime = basetime;
 
-        $('#imageDateTime').text(`UTC: ${nextYear}-${nextMonth}-${nextDay} ${nextHour}:00`);
+                    $('#imageDateTime').text(`UTC: ${nextYear}-${nextMonth}-${nextDay} ${nextHour}:00`);
 
-        const imageUrls = [
-            `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
-            `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/2.jpg`,
-            `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/3.jpg`,
-            `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/3.jpg`,
-        ];
+                    const imageUrls = [
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/2.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/3.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/3.jpg`,
+                    ];
 
-        imageUrls.forEach((imageUrl, index) => {
-            const canvas = document.getElementById(`myCanvas${index}`);
-            const ctx = canvas.getContext('2d');
+                    imageUrls.forEach((imageUrl, index) => {
+                        const canvas = document.getElementById(`myCanvas${index}`);
+                        const ctx = canvas.getContext('2d');
 
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
+                        canvas.width = canvas.clientWidth;
+                        canvas.height = canvas.clientHeight;
 
-            const img = new Image();
-            img.onload = function () {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            };
-            img.src = imageUrl;
+                        const img = new Image();
+                        img.onload = function () {
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        };
+                        img.src = imageUrl;
+                    });
+
+                    currentDate.setUTCHours(currentDate.getUTCHours() + 1);
+                    counter++;
+
+                    setTimeout(loadNextImage, 1000);
+                }
+
+                loadNextImage();
+            });
+
+            updateImages();
         });
+    </script>
+</body>
+</html>
 
-        currentDate.setUTCHours(currentDate.getUTCHours() + 1);
-        counter++;
-
-        setTimeout(loadNextImage, 1000);
-    }
-
-    loadNextImage();
-});
 
     </script>
 </body>
