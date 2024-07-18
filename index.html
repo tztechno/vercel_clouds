@@ -29,19 +29,12 @@
             height: 100%;
         }
     </style>
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@IshiiStpete" />
-    <meta name="twitter:title" content="clouds around japan">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/tztechno/vercel_clouds/main/cloud.png">
-
-    
 </head>
 
 <body>
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="input-group date" id="datepicker">
                     <input type="text" class="form-control" placeholder="Select Date">
                     <div class="input-group-append">
@@ -51,13 +44,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <select class="form-control" id="timepicker">
                     <!-- Time options will be populated by JavaScript -->
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <button id="startSlideshow" class="btn btn-primary">Start Slideshow</button>
+            </div>
+            <div class="col-md-3">
+                <span id="imageDateTime" class="form-control-plaintext"></span>
             </div>
         </div>
     </div>
@@ -158,6 +154,8 @@
                     const time = ('0' + selectedHour).slice(-2) + '0000';
                     const basetime = nextYear + nextMonth + nextDay + time;
                     const validtime = basetime;
+
+                    $('#imageDateTime').text(`UTC: ${nextYear}-${nextMonth}-${nextDay} ${('0' + selectedHour).slice(-2)}:00`);
 
                     const imageUrls = [
                         `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
