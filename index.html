@@ -143,19 +143,20 @@
                 let selectedHour = parseInt($('#timepicker').val());
 
                 let currentDate = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate()));
+                currentDate.setUTCHours(selectedHour - 23); // Start 24 hours ago
                 let counter = 0;
 
                 function loadNextImage() {
-                    if (counter >= 24) return;
+                    if (counter > 23) return;
 
                     const nextYear = currentDate.getUTCFullYear();
                     const nextMonth = ('0' + (currentDate.getUTCMonth() + 1)).slice(-2);
                     const nextDay = ('0' + currentDate.getUTCDate()).slice(-2);
-                    const time = ('0' + selectedHour).slice(-2) + '0000';
-                    const basetime = nextYear + nextMonth + nextDay + time;
+                    const nextHour = ('0' + currentDate.getUTCHours()).slice(-2);
+                    const basetime = nextYear + nextMonth + nextDay + nextHour + '0000';
                     const validtime = basetime;
 
-                    $('#imageDateTime').text(`UTC: ${nextYear}-${nextMonth}-${nextDay} ${('0' + selectedHour).slice(-2)}:00`);
+                    $('#imageDateTime').text(`UTC: ${nextYear}-${nextMonth}-${nextDay} ${nextHour}:00`);
 
                     const imageUrls = [
                         `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
@@ -180,11 +181,8 @@
                         img.src = imageUrl;
                     });
 
-                    // Move to the previous hour
-                    selectedHour = (selectedHour + 23) % 24;
-                    if (selectedHour === 23) {
-                        currentDate.setUTCDate(currentDate.getUTCDate() - 1);
-                    }
+                    // Move to the next hour
+                    currentDate.setUTCHours(currentDate.getUTCHours() + 1);
                     counter++;
 
                     // Wait 1 second before loading the next image
