@@ -29,12 +29,6 @@
             height: 100%;
         }
     </style>
-    
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@IshiiStpete" />
-    <meta name="twitter:title" content="clouds around japan">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/tztechno/vercel_clouds/main/cloud.png">
-    
 </head>
 
 <body>
@@ -56,7 +50,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <button id="startSlideshow" class="btn btn-primary">Start Slideshow</button>
+                <button id="startSlideshow" class="btn btn-primary">24h Slide Show Start</button>
             </div>
             <div class="col-md-3">
                 <span id="imageDateTime" class="form-control-plaintext"></span>
@@ -143,7 +137,7 @@
                 });
             }
 
-            // Function to start the slideshow
+            // Function to start the 24-hour slideshow
             $('#startSlideshow').on('click', function () {
                 const selectedDate = $('#datepicker').datepicker('getDate');
                 let selectedHour = parseInt($('#timepicker').val());
@@ -186,10 +180,10 @@
                         img.src = imageUrl;
                     });
 
-                    // Move to the next hour
-                    selectedHour = (selectedHour + 1) % 24;
-                    if (selectedHour === 0) {
-                        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+                    // Move to the previous hour
+                    selectedHour = (selectedHour + 23) % 24;
+                    if (selectedHour === 23) {
+                        currentDate.setUTCDate(currentDate.getUTCDate() - 1);
                     }
                     counter++;
 
