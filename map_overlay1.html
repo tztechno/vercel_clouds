@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Clouds Around Japan</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+        rel="stylesheet">
+    <style>
+        #imageContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 2列 */
+            grid-template-rows: repeat(2, 1fr);
+            /* 2行 */
+            gap: 0;
+            /* 隙間をなくす */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .canvasCell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border: 1px solid black;
+            padding: 0;
+            /* パディングをなくす */
+            margin: 0;
+            /* マージンをなくす */
+        }
+
+        .myCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            /* パディングをなくす */
+            margin: 0;
+            /* マージンをなくす */
+        }
+    </style>
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@IshiiStpete" />
+    <meta name="twitter:title" content="clouds around japan">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/tztechno/vercel_clouds/main/cloud.png">
+
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="input-group date" id="datepicker">
+                    <input type="text" class="form-control" placeholder="Select Date">
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-control" id="timepicker">
+                    <!-- Time options will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button id="startSlideshow" class="btn btn-primary">24h Slide Show Start</button>
+            </div>
+            <div class="col-md-3">
+                <span id="imageDateTime" class="form-control-plaintext"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageContainer" class="mt-4">
+        <div class="canvasCell">
+            <canvas id="myCanvas0" class="myCanvas"></canvas>
+        </div>
+        <div class="canvasCell">
+            <canvas id="myCanvas1" class="myCanvas"></canvas>
+        </div>
+        <div class="canvasCell">
+            <canvas id="myCanvas2" class="myCanvas"></canvas>
+        </div>
+        <div class="canvasCell">
+            <canvas id="myCanvas3" class="myCanvas"></canvas>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            }).on('changeDate', updateImages);
+
+            for (let i = 0; i < 24; i++) {
+                const hour = ('0' + i).slice(-2);
+                $('#timepicker').append(`<option value="${hour}">${hour}:00</option>`);
+            }
+
+            $('#timepicker').on('change', updateImages);
+
+            const now = new Date();
+            const utcHour = now.getUTCHours();
+            $('#datepicker').datepicker('setDate', new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())));
+            $('#timepicker').val(('0' + utcHour).slice(-2));
+
+            updateImages();
+
+            function updateImages() {
+                const selectedDate = $('#datepicker').datepicker('getDate');
+                const selectedHour = $('#timepicker').val();
+
+                const year = selectedDate.getUTCFullYear();
+                const month = ('0' + (selectedDate.getUTCMonth() + 1)).slice(-2);
+                const day = ('0' + selectedDate.getUTCDate()).slice(-2);
+                const time = selectedHour + '0000';
+                const basetime = year + month + day + time;
+                const validtime = basetime;
+
+                const imageUrls = [
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/2.jpg`,
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/3.jpg`,
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/3.jpg`,
+                ];
+
+                imageUrls.forEach((imageUrl, index) => {
+                    const canvas = document.getElementById(`myCanvas${index}`);
+                    const ctx = canvas.getContext('2d');
+
+                    canvas.width = canvas.clientWidth;
+                    canvas.height = canvas.clientHeight;
+
+                    const img = new Image();
+                    img.onload = function () {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    };
+                    img.src = imageUrl;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
